@@ -51,7 +51,7 @@ function App() {
           break;
       }
     };
-
+    //web worker
     worker.current.addEventListener("message", onMessageReceived);
 
     return () =>
