@@ -17,6 +17,12 @@ function App() {
   const isAudioAvailable = file || audioStream;
 
   function handleAudioReset() {
+    if (audioStream) {
+      audioStream.getTracks().forEach((track) => {
+        track.stop();
+        console.log("Stopped audio track:", track.kind);
+      });
+    }
     setFile(null);
     setAudioStream(null);
   }
@@ -25,12 +31,19 @@ function App() {
 
   useEffect(() => {
     if (!worker.current) {
-      worker.current = new Worker(
-        new URL("./utils/whisper.worker.js", import.meta.url),
-        {
-          type: "module",
-        }
-      );
+      try {
+        worker.current = new Worker(
+          new URL("./utils/whisper.worker.js", import.meta.url),
+          {
+            type: "module",
+          }
+        );
+        worker.current.onerror = (error) => {
+          console.error("Worker error:", error);
+        };
+      } catch (error) {
+        console.error("Failed to create worker:", error);
+      }
     }
     const onMessageReceived = async (e) => {
       switch (e.data.type) {
@@ -44,6 +57,7 @@ function App() {
           break;
         case "RESULT":
           setOutput(e.data.results);
+          console.log(e.data.results);
           break;
         case "INFERENCE_DONE":
           setFinished(true);
@@ -82,13 +96,23 @@ function App() {
     console.log("Submitting to worker...");
 
     let audio = await readAudioFrom(file ? file : audioStream);
-    const model_name = `openai/whisper-tiny.en`;
+    if (!audio) {
+      console.error("Failed to process audio");
+      return;
+    }
+    console.log("Audio processed successfully, sending to worker...");
+
+    const model_name = `Xenova/whisper-tiny`;
 
     worker.current.postMessage({
       type: MessageTypes.INFERENCE_REQUEST,
       audio,
       model_name,
     });
+    console.log(
+      "Message sent to worker - Type:",
+      MessageTypes.INFERENCE_REQUEST
+    );
   }
 
   return (
