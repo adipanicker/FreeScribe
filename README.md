@@ -34,8 +34,6 @@ FreeScribe is a powerful and sleek web application built using **React.js + Vite
   <br><br>
   <img src="/src/assets/screenshots/4.png" alt="Screenshot 4" width="700"/>
   <br><br>
-  <img src="/src/assets/screenshots/5.png" alt="Screenshot 5" width="700"/>
-  <br><br>
   <img src="/src/assets/screenshots/6.png" alt="Screenshot 6" width="700"/>
   <br><br>
   <img src="/src/assets/screenshots/7.png" alt="Screenshot 7" width="700"/>
